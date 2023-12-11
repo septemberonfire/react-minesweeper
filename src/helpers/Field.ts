@@ -15,10 +15,28 @@ export const emptyFieldGenerator = (
   state: Cell = CellState.empty
 ): Field => new Array(size).fill(null).map(() => new Array(size).fill(state));
 
-export const fieldGenerator = (size: number, dencity: number): Field => {
-  if (dencity < 0 || dencity > 1) {
-    throw new Error('Dencity must be between 0 and 1')
+export const fieldGenerator = (size: number, propability: number): Field => {
+  if (propability < 0 || propability > 1) {
+    throw new Error("Propability must be between 0 and 1");
   }
 
-  return emptyFieldGenerator(1)
-}
+  let unprocessedCells = size * size;
+  let restCellsWithBombs = unprocessedCells * propability;
+
+  const result: Field = emptyFieldGenerator(size);
+
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      if (restCellsWithBombs === 0) {
+        return result;
+      }
+      if (restCellsWithBombs / unprocessedCells > Math.random()) {
+        result[i][j] = CellState.bomb
+        restCellsWithBombs--
+      }
+      unprocessedCells--
+    }
+  }
+
+  return result;
+};
